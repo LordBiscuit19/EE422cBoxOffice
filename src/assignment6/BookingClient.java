@@ -12,6 +12,7 @@ public class BookingClient {
 	Map<String, Integer> offices;
 	Theater theater;
 	boolean noMoreRoom = false;
+	boolean hasPrinted = false;
 	int clientIDs = 0;
   /*
    * @param office maps box office id to number of customers in line
@@ -49,14 +50,25 @@ public class BookingClient {
 		public void run() {
 			if (!noMoreRoom) {
 				for (int i = 0; i < clients; i++) {
-					Theater.Seat seat = theater.bestAvailableSeat();
-					if (seat == null) {
-						noMoreRoom = true;
-						System.out.println("Sorry, we are sold out! ");
-						return;
+					synchronized (theater){
+						Theater.Seat seat;
+						seat = theater.bestAvailableSeat();
+						if (seat == null) {
+							noMoreRoom = true;
+							if (!hasPrinted) {
+								hasPrinted = true;
+								System.out.println("Sorry, we are sold out! ");
+							}
+							return;
+						}
+						else {
+							clientIDs++;
+							theater.printTicket(id, seat, clientIDs);
+						}
 					}
-					clientIDs++;
-					theater.printTicket(id, seat, clientIDs);
+					try {
+						Thread.sleep(0,1);
+					} catch (InterruptedException e) {}
 				}
 			}
 			
@@ -73,14 +85,14 @@ public class BookingClient {
 	
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
-		Theater theater = new Theater(60, 1, "Ouija");
+		Theater theater = new Theater(50, 3, "Ouija");
 		//BX1=3, BX3=3, BX2=4, BX5=3, BX4=3
 		Map<String,Integer> map = new HashMap<String,Integer>();
-		map.put("BX1", 15);
-		map.put("BX2", 15);
-		map.put("BX3", 12);
-		map.put("BX4", 14);
-		map.put("BX5", 16);
+		map.put("BX1", 50);
+		map.put("BX2", 30);
+		map.put("BX3", 20);
+		map.put("BX4", 20);
+		map.put("BX5", 40);
 		BookingClient client = new BookingClient(map,theater);
 		
 		

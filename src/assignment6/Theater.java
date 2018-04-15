@@ -43,7 +43,7 @@ public class Theater {
 				rowNumTemp = 26;
 			}
 
-			while (rowNumTemp >= 26) {
+			while (rowNumTemp >= 27) {
 				remainder = rowNumTemp % 26;
 				rowNumStr += (char) (remainder + (int) 'A');
 				rowNumTemp = rowNumTemp/26;
