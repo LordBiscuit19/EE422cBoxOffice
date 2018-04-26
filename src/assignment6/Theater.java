@@ -1,4 +1,12 @@
-// insert header here
+/* MULTITHREADING <MyClass.java>
+ * EE422C Project 6 submission by
+ * Replace <...> with your actual data.
+ * Donald Maze-England
+ * dsm2588
+ * 15465
+ * Slip days used: <0>
+ * Spring 2018
+ */
 package assignment6;
 
 import java.util.ArrayList;
@@ -18,7 +26,7 @@ public class Theater {
 	static class Seat {
 		private int rowNum;
 		private int seatNum;
-		private boolean reserved = false;
+		private boolean reserved = false; //all seats start as not reserved
 
 		public Seat(int rowNum, int seatNum) {
 			this.rowNum = rowNum;
@@ -33,28 +41,25 @@ public class Theater {
 			return rowNum;
 		}
 
+		/**
+		 * prints the seats row and seat number
+		 */
 		@Override
 		public String toString() {
 			int rowNumTemp = rowNum;
+			String result = "";
 			int remainder;
-			String rowNumStr = "";
-			//This while loop should convert the rowNum to an alphabetical representation
-			if (rowNumTemp == 26) {
-				rowNumTemp = 26;
-			}
+		    while (rowNumTemp > 0) {
+		      rowNumTemp--; // 1 => a, not 0 => a
+		      remainder = rowNumTemp % 26;
+		      char digit = (char) (remainder + (int) 'A'); //Lettering starts at A
+		      result = digit + result;
+		      rowNumTemp = rowNumTemp - remainder;
+		      rowNumTemp = rowNumTemp/26;
+		    }
 
-			while (rowNumTemp >= 27) {
-				remainder = rowNumTemp % 26;
-				rowNumStr += (char) (remainder + (int) 'A');
-				rowNumTemp = rowNumTemp/26;
-			}
-			while (rowNumTemp > 0) {
-				remainder = rowNumTemp % 26;
-				rowNumStr += (char) (remainder + (int) 'A'- 1);
-				rowNumTemp = rowNumTemp/26;
-			}			
-			StringBuilder sb = new StringBuilder(rowNumStr);
-			return sb.reverse() + Integer.toString(seatNum);
+		    return result + Integer.toString(seatNum);		  
+			
 		}
 	}
 
@@ -71,7 +76,7 @@ public class Theater {
 			this.show = show;
 			this.boxOfficeId = boxOfficeId;
 			this.seat = seat;
-			seat.reserved = true;
+			seat.reserved = true; //whenever a tickets is created for a seat mark that seat as reserved
 			this.client = client;
 		}
 
@@ -91,44 +96,61 @@ public class Theater {
 			return client;
 		}
 
+		
+		/**
+		 * prints a text representation of a ticket purchased by a client to the console
+		 */
 		@Override
 		public String toString() {
+			//print the top row of the ticket
 			String str = "";
-			for (int i = 0; i < 30; i++) {
+			for (int i = 0; i < 31; i++) {
 				str+="-";
 			}
+			//print the show
 			str += "\n";
 			String temp = "| Show: " + show;
 			str += temp;
-			for (int i = 0; i < (30 - temp.length())-1; i++) {
+			for (int i = 0; i < (31 - temp.length())-1; i++) {
 				str += " ";
 			}
+			//print the box office id
 			str += "|\n";
 			temp = "| Box Office ID: " + boxOfficeId;
 			str += temp;
-			for (int i = 0; i < (30 - temp.length())-1; i++) {
+			for (int i = 0; i < (31 - temp.length())-1; i++) {
 				str += " ";
 			}
+			//print the seat number
 			str += "|\n";
 			temp = "| Seat: " + seat.toString();
 			str += temp;
-			for (int i = 0; i < (30 - temp.length())-1; i++) {
+			for (int i = 0; i < (31 - temp.length())-1; i++) {
 				str += " ";
 			}
+			//print the client id
 			str += "|\n";
 			temp = "| Client: " + client;
 			str += temp;
-			for (int i = 0; i < (30 - temp.length())-1; i++) {
+			for (int i = 0; i < (31 - temp.length())-1; i++) {
 				str += " ";
 			}
+			//print the bottom of the ticket
 			str += "|\n";
-			for (int i = 0; i < 30; i++) {
+			for (int i = 0; i < 31; i++) {
 				str+="-";
 			}
 			return str;
 		}
 	}
 
+	
+	/**
+	 * Constructor for the theater
+	 * @param numRows	the number of rows of seats the theater has
+	 * @param seatsPerRow	the number of seats in each row the theater has
+	 * @param show	the show the theater is currently playing
+	 */
 	public Theater(int numRows, int seatsPerRow, String show) {
 		this.numRows = numRows;
 		this.seatsPerRow = seatsPerRow;
@@ -152,7 +174,7 @@ public class Theater {
 				return s;
 			}
 		}
-		//if no seats avaliable return null
+		//if no seats available return null
 		return null;
 	}
 
@@ -164,10 +186,15 @@ public class Theater {
    * @return a ticket or null if a box office failed to reserve the seat
    */
 	public Ticket printTicket(String boxOfficeId, Seat seat, int client) {
-		Ticket ticket = new Ticket(show, boxOfficeId, seat, client);
-		System.out.println(ticket.toString());
-		tickets.add(ticket);
-		return ticket;
+		if (seat == null) {
+			return null;
+		}
+		else {
+			Ticket ticket = new Ticket(show, boxOfficeId, seat, client);
+			System.out.println(ticket.toString());
+			tickets.add(ticket);
+			return ticket;
+		}
 	}
 
 	/*
